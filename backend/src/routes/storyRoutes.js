@@ -2,21 +2,22 @@ const express = require('express');
 const router = express.Router();
 const storyController = require('../controllers/storyController');
 const { authenticateToken } = require('../middleware/auth');
+const { apiLimiter, storyCreationLimiter } = require('../middleware/rateLimiter');
 
-router.post('/', authenticateToken, storyController.createStory);
-router.get('/', storyController.getAllStories);
-router.get('/my-stories', authenticateToken, storyController.getUserStories);
-router.get('/:id', storyController.getStory);
-router.put('/:id', authenticateToken, storyController.updateStory);
-router.delete('/:id', authenticateToken, storyController.deleteStory);
+router.post('/', storyCreationLimiter, authenticateToken, storyController.createStory);
+router.get('/', apiLimiter, storyController.getAllStories);
+router.get('/my-stories', apiLimiter, authenticateToken, storyController.getUserStories);
+router.get('/:id', apiLimiter, storyController.getStory);
+router.put('/:id', apiLimiter, authenticateToken, storyController.updateStory);
+router.delete('/:id', apiLimiter, authenticateToken, storyController.deleteStory);
 
-router.post('/:id/chapters', authenticateToken, storyController.addChapter);
-router.get('/:id/chapters', storyController.getChapters);
+router.post('/:id/chapters', apiLimiter, authenticateToken, storyController.addChapter);
+router.get('/:id/chapters', apiLimiter, storyController.getChapters);
 
-router.post('/:id/like', authenticateToken, storyController.likeStory);
-router.delete('/:id/like', authenticateToken, storyController.unlikeStory);
+router.post('/:id/like', apiLimiter, authenticateToken, storyController.likeStory);
+router.delete('/:id/like', apiLimiter, authenticateToken, storyController.unlikeStory);
 
-router.post('/:id/comments', authenticateToken, storyController.addComment);
-router.get('/:id/comments', storyController.getComments);
+router.post('/:id/comments', apiLimiter, authenticateToken, storyController.addComment);
+router.get('/:id/comments', apiLimiter, storyController.getComments);
 
 module.exports = router;
